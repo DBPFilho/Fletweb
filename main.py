@@ -82,22 +82,45 @@ def main(page: ft.Page):
         seq_busca = re.sub(r'\s+', '', seq_busca)
         seq_busca = re.sub(r'\d', '', seq_busca)
         seq_busca = re.sub(r'\n', '', seq_busca)
+
 #Procura o texto
-        if primer_foward_cru in seq_busca:
+        if primer_foward_cru and seq_invertida in seq_busca:
             pos_foward = seq_busca.find(primer_foward_cru)
             fragmento_1 = seq_busca[:pos_foward]
-        if seq_invertida in seq_busca:
+            fragmento_primer_foward = primer_foward_cru
             pos_reverse = seq_busca.find(seq_invertida, pos_foward + 1)
-            fragmento_2 = seq_busca[pos_foward + 1:pos_reverse]
-            fragmento_3 = seq_busca[pos_reverse+1:]
-        
+            fragmento_2 = seq_busca[pos_foward + len(primer_foward_cru):pos_reverse]
+            pares_de_base = str(len(fragmento_2) + len(primer_foward_cru) + len(seq_invertida))
+            inf_alelo = "\nForam encontrados " + pares_de_base + " pares de base na sequência"
+            fragmento_primer_reverse = seq_invertida
+            fragmento_3 = seq_busca[pos_reverse+len(seq_invertida):]
+
+        if primer_foward_cru in seq_busca and seq_invertida not in seq_busca:
+            pos_foward = seq_busca.find(primer_foward_cru)
+            fragmento_1 = seq_busca[:pos_foward]
+            fragmento_primer_foward = primer_foward_cru
+            fragmento_2 = seq_busca[pos_foward + len(primer_foward_cru):]
+            fragmento_primer_reverse = ''
+            fragmento_3 =''
+            inf_alelo = "\nApenas o primer foward foi encontrado"  
+
+        if primer_foward_cru not in seq_busca and seq_invertida in seq_busca:
+            pos_reverse = seq_busca.find(seq_invertida)
+            fragmento_1 = seq_busca[:pos_reverse]
+            fragmento_primer_reverse = seq_invertida
+            fragmento_3 = seq_busca[pos_reverse + len(seq_invertida):]
+            fragmento_primer_foward = ''
+            fragmento_2 =''
+            inf_alelo = "\nApenas o primer reverse foi encontrado" 
+
 #Adiciona o texto com formatação mista
         resultado = ft.Text(spans = [
             ft.TextSpan(text=fragmento_1),
-            ft.TextSpan(text=primer_foward_cru, style=ft.TextStyle(color=ft.colors.BLUE)),
+            ft.TextSpan(text=fragmento_primer_foward, style=ft.TextStyle(color=ft.colors.BLUE)),
             ft.TextSpan(text=fragmento_2),
-            ft.TextSpan(text=seq_invertida, style=ft.TextStyle(color=ft.colors.BLUE)),
-            ft.TextSpan(text=fragmento_3)
+            ft.TextSpan(text=fragmento_primer_reverse, style=ft.TextStyle(color=ft.colors.BLUE)),
+            ft.TextSpan(text=fragmento_3),
+            ft.TextSpan(text=inf_alelo)
             ],
         )            
         
