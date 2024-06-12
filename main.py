@@ -129,7 +129,10 @@ def main(page: ft.Page):
         )
 
         page.update()
-
+        
+#Habilita a barra de rolagem
+    page.scroll = "always"
+    
 #Botão
     page.add(
         ft.ElevatedButton(text='Localizar', on_click=analisar)
